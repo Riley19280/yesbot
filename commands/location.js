@@ -11,15 +11,11 @@ exports.params = [];
 exports.optionalParam = "(@mention, #channel)";
 
 exports.run = async (client, message, args) => {
-    let m;
-    try {
-        m = message.mentions.members.first();
-    } catch (e) {}
-    if (!m) {
-        m = message.member;
-    }
-
     let members
+
+    try {
+        members = message.mentions.members.array();
+    } catch (e) {}
 
     let channel = message.content.match(/<#([0-9]+)>/)
     if(channel != null) {
@@ -27,15 +23,18 @@ exports.run = async (client, message, args) => {
         channel = await client.channels.find('id', channel)
 
         if(["text", "voice"].includes(channel.type))
-            members = channel.members
+            members = members.concat(channel.members.array())
     }
 
-    if(members == null)
-        members = [m]
+    if (members.length === 0) {
+        members = [message.member];
+    }
 
     let result = ""
 
-    Promise.map(members.array(), function(mem) {
+    // console.log(members.map(e => e.displayName))
+
+    Promise.map(members, function(mem) {
 
         return dbcmds.getLocation(mem).then(location => {
             if (location == null || location == "")

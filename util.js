@@ -55,3 +55,26 @@ exports.minutesToTimespan = (mins) => {
 
     return strs.join(', ')
 }
+
+exports.locationKML = async (guildId) => {
+
+	let locations = await dbcmds.locationList(guildId)
+
+	console.log(locations)
+
+	let string = `<kml xmlns="http://www.opengis.net/kml/2.2">`
+
+	for(let loc of locations) {
+
+		string += `<Placemark>
+    <name>${loc.username}</name>
+    <Point>
+      <coordinates>${loc.longitude},${loc.latitude},0</coordinates>
+    </Point>
+  </Placemark>`
+	}
+
+	string += `</kml>`
+	return string
+
+}

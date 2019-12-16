@@ -7,4 +7,6 @@ let webserv, client;
 
 exports.run = (c)=>{
 	client = c
+	webserv = require('./express')
+	webserv.init(client)
 };

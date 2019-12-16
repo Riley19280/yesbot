@@ -3,8 +3,8 @@
   
  	 confirmPresence:confirmPresence,
 	 setLocation: setLocation,
-	getLocation: getLocation
-
+	getLocation: getLocation,
+	locationList: locationList
 
 };
 
@@ -55,8 +55,17 @@ module.exports.close = function () {
 	 })
  }
  
- function setLocation(member, tag){
-	return genericSet("location", member, tag);
+ async function setLocation(member, address, lat, lng){
+	return new Promise(async (resolve, reject) => {
+		try {
+			await genericSet("location", member, address);
+			await genericSet("latitude", member, lat);
+			await genericSet("longitude", member, lng);
+			resolve()
+		}	catch (e) {
+			reject(e)
+		}
+	})
  }
 
  function getLocation(member){
@@ -69,8 +78,9 @@ module.exports.close = function () {
 	 return conn.query('update users set '+colname+' = ? where guildID = ? and userID = ?',
 		 [ val, member.guild.id, member.id ])
 	 .catch((err) => {
-	 	console.log('generic set failed: '+ colname + "\n" + err)
-		 return Promise.reject(false)
+	 	console.error('generic set failed: '+ colname)
+		console.error(err)
+		return Promise.reject(false)
 	 })
  }
  
@@ -85,23 +95,22 @@ module.exports.close = function () {
 		return Promise.resolve(rows[0][colname])
 		})
 	.catch((err) => {
-		console.error('generic get failed')
-		console.log(member.user.username)
+		console.error('generic get failed, ' + member.user.username)
 		console.error(err)
 		return Promise.reject()
 	})
  }
 
- function randomString(length) {
-	 let text = "";
-	 let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-	 for (let i = 0; i < length; i++)
-		 text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-	 return text;
+ async function locationList(guildId) {
+	 return conn.query('select username, latitude, longitude from users where guildID = ? and latitude is not null and longitude is not null',
+		 [ guildId ])
+		 .then((rows) => {
+			 if (rows[0] == null)
+				 return Promise.resolve([]);
+			 return Promise.resolve(rows)
+		 })
+		 .catch((err) => {
+			 console.error(err)
+			 return Promise.reject()
+		 })
  }
-
- 
- 
- 
