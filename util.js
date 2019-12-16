@@ -60,21 +60,40 @@ exports.locationKML = async (guildId) => {
 
 	let locations = await dbcmds.locationList(guildId)
 
-	console.log(locations)
+	let iconLink
+	if(config.prefix !== '!')
+		iconLink = 'https://www.dropbox.com/s/j9oht245flp66qg/marker.png?dl=1'
+	else
+		iconLink = 'https://yestheory.rileystech.com/marker.png'
 
-	let string = `<kml xmlns="http://www.opengis.net/kml/2.2">`
+	// <NetworkLinkControl>
+	// <expires>${new Date(new Date().getTime() + 1000 * 60 *5).toISOString()}</expires>
+	// </NetworkLinkControl>
+
+	let string = `<?xml version="1.0" encoding="UTF-8"?>
+	<kml xmlns="http://www.opengis.net/kml/2.2">
+	<Document>
+	<name>Yes NC Locations</name>
+	<Style id="markerIcon">
+		<IconStyle>
+			<Icon>
+				<href>${iconLink}</href>
+			</Icon>
+		</IconStyle>
+	</Style>`
 
 	for(let loc of locations) {
 
-		string += `<Placemark>
-    <name>${loc.username}</name>
-    <Point>
-      <coordinates>${loc.longitude},${loc.latitude},0</coordinates>
-    </Point>
-  </Placemark>`
+		string += `
+			<Placemark>
+				<name>${loc.username}</name>
+					<Point>
+						<coordinates>${loc.longitude},${loc.latitude},0</coordinates>
+					</Point>
+					<styleUrl>#markerIcon</styleUrl>
+			  </Placemark>`
 	}
-
-	string += `</kml>`
+	string += `</Document></kml>`
 	return string
 
 }

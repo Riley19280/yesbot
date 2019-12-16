@@ -3,6 +3,7 @@ const config = require('./config.json');
 const dbcmds = require('./database');
 const util = require('./util');
 const fs = require('fs-extra');
+const basefs = require('fs')
 let http = require('http');
 let https = require('https');
 
@@ -36,6 +37,26 @@ module.exports.init = function (client1) {
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/map.kml/:id', async (req,res) =>  {
-    await util.locationKML(req.params.id)
+app.get('/:id/map.kml', async (req,res) =>  {
+    let resp = await util.locationKML(req.params.id)
+    res.send(resp)
 });
+
+//
+app.get('/', async (req,res) =>  {
+    res.redirect('/map')
+});
+app.get('/map', async (req,res) =>  {
+    res.sendFile('map.html', { root: './webserver' })
+});
+//
+// app.get('/marker.png', async (req,res) =>  {
+//     res.sendFile('marker.png', { root: './webserver' })
+// });
+
+
+basefs.readdirSync('./webserver/').forEach(function (file) {
+    // console.log('../resources/public/'+file);
+    app.get('/'+file,(req,res) => res.sendFile('./webserver/'+file, { root: '.' }));
+
+})

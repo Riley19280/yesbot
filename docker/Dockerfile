@@ -60,5 +60,6 @@ COPY ./docker/start.sh .
 COPY ./ .
 
 EXPOSE 80
+EXPOSE 443
 
 CMD [ "bash", "start.sh" ]

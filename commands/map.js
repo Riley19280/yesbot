@@ -9,8 +9,8 @@ exports.params = [];
 
 exports.run = async (client, message, args) => {
 
-    let result = await util.locationKML(message.member.guild.id)
+    //let result = await util.locationKML(message.member.guild.id)
 
-    message.channel.send(result)
+    message.channel.send('https://yestheory.rileystech.com/map')
 }
 
