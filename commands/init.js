@@ -6,15 +6,10 @@ exports.desc = "Initializes the guild with all users";
 
 exports.params = [];
 
+exports.require_roles = config.admin_roles
 
 exports.run = (client, message, args) => {
-	if (message.member.roles.some(r => config.admin_roles.includes(r.name))) {
-
-		message.member.guild.members.map(function (mem) {
-			console.log(mem.user.username)
-		})
-
-	}else {
-		return message.channel.send("You don't have permission to use init.");
-	}
+	message.member.guild.members.map(function (mem) {
+		console.log(mem.user.username)
+	})
 }

@@ -6,11 +6,9 @@ exports.desc = "Reloads the specified command.";
 
 exports.params = ["command"];
 
+exports.require_roles = config.admin_roles
 
 exports.run = (client, message, args) => {
-
-	if(!message.member.roles.some(r=>config.admin_roles.includes(r.name)) )
-		return message.channel.send("You don't have permissions to use this!");
 
     if(!args || args.size < 1) return message.channel.send("Invalid parameter. Must provide a command name to reload.");
     // the path is relative to the *current folder*, so just ./filename.js

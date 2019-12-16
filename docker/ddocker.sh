@@ -9,7 +9,7 @@ docker build -f ./docker/Dockerfile --rm -t local/yesbot -t 025221494343.dkr.ecr
 
 
 
-#docker run -d --rm --privileged -p 80:80 -p 9000 --network proxynet --ip 172.30.0.13 --name guardbot local/guardbot
+#docker run -d --rm --privileged -p 80:80 -p 9000 --network proxynet --ip 172.30.0.22 --name yesbot local/yesbot
 
 cd docker
 

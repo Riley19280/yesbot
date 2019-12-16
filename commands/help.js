@@ -18,8 +18,7 @@ try {
 }
 catch(err){
 	console.log(err);
-	message.channel.send('An error has occurred.');
-	return;
+	return message.channel.send('An error has occurred.');
 }
 files.forEach(file => {
 	if(config.excluded_command_files.includes(file))
@@ -30,8 +29,6 @@ files.forEach(file => {
 exports.params = ["command","list"];
 
 exports.run = (client, message, args) => {
-
-	
 	//getting valid files to run for all commands
 	try {
 		files = fs.readdirSync(`./commands/`);

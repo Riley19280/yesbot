@@ -25,7 +25,6 @@ client.on("ready", async () => {
 client.on("message", message => {
 	if (message.author.bot) return;
 
-	//run regardless
 	let filename;
 	if(process.platform == 'win32')
 		filename = __filename.split("\\").pop().split(".")[0];
@@ -56,36 +55,33 @@ client.on("message", message => {
 	}
 
 	//disallow commands in dms
-	if(message.content.indexOf(config.prefix) === 0 && message.channel.type === "dm") {
-		message.channel.send('Commands are not available in DM\'s.');
-		return;
+	if(message.content.indexOf(config.prefix) === 0 && message.channel.type === "dm")
+		return message.channel.send('Commands are not available in DM\'s.');
+
+  	// This is the best way to define args. Trust me.
+	const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+	let command = args.shift().toLowerCase();
+
+	//make sure it is a valid command
+	if(!valid.includes(command) && !Object.keys(config.aliases).includes(command))
+		return message.channel.send('Unrecognized Command!');
+
+
+	try {
+		if(Object.keys(config.aliases).includes(command))
+			command = config.aliases[command]
+		let commandFile = require(`./commands/${command}.js`);
+
+		if(commandFile.require_roles && commandFile.require_roles.length > 0 &&  !message.member.roles.some(r => commandFile.require_roles.includes(r.name)))
+			return message.channel.send('You do not have permission to use this command.');
+
+		commandFile.run(client, message, args);
+	} catch (err) {
+		console.error(err);
+		message.channel.send('Error executing command.');
 	}
-
-
-  // This is the best way to define args. Trust me.
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
-  let command = args.shift().toLowerCase();
-
-  //make sure it is a valid command
-  	if(!valid.includes(command) && !Object.keys(config.aliases).includes(command))
-	{
-		message.channel.send('Unrecognized Command!');
-		return;
-	}
-
-    try {
-  	    if(Object.keys(config.aliases).includes(command))
-  	        command = config.aliases[command]
-        let commandFile = require(`./commands/${command}.js`);
-        commandFile.run(client, message, args);
-    } catch (err) {
-        console.error(err);
-        message.channel.send('Error executing command.');
-    }
 });
 
-//const mysvr = require("./mywebserver");
-//mysvr.run(client);
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir("./events/", (err, files) => {

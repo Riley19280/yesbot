@@ -2,12 +2,8 @@
  module.exports = {
   
  	 confirmPresence:confirmPresence,
-  	 setBattletag: setBattletag,
- 	 setSteam: setSteam,
-	 setSteamId: setSteamId,
- 	 getBattletag: getbattletag,
- 	 getSteam: getSteam,
-	 getSteamId: getSteamId,
+	 setLocation: setLocation,
+	getLocation: getLocation
 
 
 };
@@ -29,7 +25,6 @@ const auth = require('./auth.json');
 
 
 module.exports.INIT = async function () {
-	return
 	if (conn == null)
 		return await mysql.createConnection(dbconfig).then(function(con){
 			conn = con;
@@ -48,92 +43,60 @@ module.exports.close = function () {
 }
 
  async function confirmPresence(member) {
-    await module.exports.INIT()
-	//console.log(member)
+     await module.exports.INIT()
 	 return conn.query(
 		 "insert into users(guildID,userID,username,avatar) values(?,?,?,?) ON DUPLICATE KEY UPDATE guildID = ?, userID = ?, username = ?, avatar = ?",
 		 [
-			 member.guild.id, member.id, member.user.username, member.user.displayAvatarURL,//insert statement
-			 member.guild.id, member.id, member.user.username, member.user.displayAvatarURL//update statement
+			 member.guild.id, member.id, member.displayName, member.user.displayAvatarURL,//insert statement
+			 member.guild.id, member.id, member.displayName, member.user.displayAvatarURL//update statement
 		 ]
 	 ).catch((err) => {
-		 console.log(err)
+		 // console.log(err)
 	 })
- }
-
- function setBattletag(member, tag){
-	 return genericSet("battletag",member,tag)
-	 .then(()=>{
-	 	return genericSet("ow_sr",member,null);
-	 })
-	 .then(()=>{exports.addNewBattletag(tag)})
  }
  
- function setSteam(member, tag){
-	return genericSet("steam",member,tag);
+ function setLocation(member, tag){
+	return genericSet("location", member, tag);
  }
 
- function getSteam(member){
-	 return genericGet("steam",member);
+ function getLocation(member){
+	 return genericGet("location", member);
  }
 
- function setSteamId(member, tag){
-     return genericSet("steam_id",member,tag);
- }
+ async function genericSet(colname,member,val){
+	 await confirmPresence(member)
 
- function getSteamId(member){
-     return genericGet("steam_id",member);
- }
- 
- function getbattletag(member){
-	 return genericGet("battletag",member);
-
- }
-
- function getTwitch(member){
-     return  genericGet("twitch",member);
- }
-
- function setTwitch(member,username,id){
-     return	 genericSet("twitch_id",member,id).then(()=>{
-     	return genericSet("twitch",member,username);
-	 });
-
- }
-
- function genericSet(colname,member,val){
-	 return confirmPresence(member)
-	 .then(() => {
-		 return conn.query('update users set '+colname+' = ? where guildID = ? and userID = ?',
-			 [ val, member.guild.id, member.id ])
-	 })
+	 return conn.query('update users set '+colname+' = ? where guildID = ? and userID = ?',
+		 [ val, member.guild.id, member.id ])
 	 .catch((err) => {
 	 	console.log('generic set failed: '+ colname + "\n" + err)
 		 return Promise.reject(false)
 	 })
  }
  
- function genericGet(colname,member){
-	return confirmPresence(member).then(() => {
-		return conn.query('select * from users where guildID = ? and userID = ?',
-			[ member.guild.id, member.id ])
-		})
+ async function genericGet(colname, member){
+	await confirmPresence(member)
+
+	return conn.query('select * from users where guildID = ? and userID = ?',
+		[ member.guild.id, member.id ])
 	.then((rows) => {
 		if (rows[0] == null)
 			return Promise.resolve(null);
 		return Promise.resolve(rows[0][colname])
 		})
 	.catch((err) => {
-		console.log(err)
+		console.error('generic get failed')
+		console.log(member.user.username)
+		console.error(err)
 		return Promise.reject()
 	})
  }
 
- function randomString(num) {
+ function randomString(length) {
 	 let text = "";
 	 let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-	 for (let i = 0; i < num; i++)
+	 for (let i = 0; i < length; i++)
 		 text += possible.charAt(Math.floor(Math.random() * possible.length));
 
 	 return text;

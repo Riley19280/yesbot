@@ -11,7 +11,7 @@ exports.run = (client,member) => {
 
   member.createDM().then((channel)=>{channel.send(`Welcome to the Yes Charlotte community ${member.user.username}!! \nPlease make sure to check out the rules page and read the channel descriptions. \nHave fun!`);});
 
-  channel.send(`Welcome to the Yes Charlotte community ${member.user.username}!! Feel free to introduce yourself so we can get to know you!`)
+  channel.send(`Welcome to the Yes Charlotte community <@${member.user.id}>!! Feel free to introduce yourself so we can get to know you!`)
 
   // member.addRole(member.guild.roles.find("name", config.default_role))
   //   .catch(()=>{

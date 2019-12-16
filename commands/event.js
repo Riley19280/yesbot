@@ -2,14 +2,16 @@ const config = require('./../config.json');
 const dbcmds = require('./../database');
 const util = require('./../util');
 
-exports.desc = "Turns bot off.";
+exports.desc = "Dummy command";
 
 exports.params = [];
 
 exports.require_roles = config.admin_roles
 
-
 exports.run = (client, message, args) => {
-	message.channel.send(`Bot was turned off by ${message.author.username}`);
-	client.destroy();
-};
+
+	if(args[1] === "guildMemberAdd")
+		client.emit("guildMemberAdd", message.member);
+
+	///message.channel.send(message.author.displayAvatarURL)
+}
