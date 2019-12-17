@@ -18,7 +18,7 @@ exports.run = async (client, message, args) => {
 
     if(mem != null) {//if there is a mention
         if (!message.member.roles.some(r => config.admin_roles.includes(r.name))) {
-            return message.channel.send("You don't have permission to set others' location.js.");
+            return message.channel.send("You don't have permission to set others' location.");
         }
     }
     else {

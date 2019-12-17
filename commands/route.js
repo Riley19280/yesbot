@@ -50,10 +50,15 @@ exports.run = async (client, message, args) => {
     let dist_matrix_url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=${units}&origins=${Object.keys(locations).map(k => locations[k]).join('|')}&destinations=${destination}&key=${config.maps_api_key}`
 
     let results = JSON.parse(await rp(dist_matrix_url))
+    // console.log(JSON.stringify(results))
 
     if(results.status !== 'OK') {
         console.error(JSON.stringify(results))
         return message.channel.send('Sorry, an error occurred processing your request')
+    }
+
+    if(results.rows[0].elements[0].status === "ZERO_RESULTS") {
+        return message.channel.send('Sorry, No route found to that location.')
     }
 
     let response = `Routing to ${results.destination_addresses[0]}\n`

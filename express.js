@@ -37,7 +37,7 @@ module.exports.init = function (client1) {
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/:id/map.kml', async (req,res) =>  {
+app.get('/:id/map.kml/:time', async (req,res) =>  {
     let resp = await util.locationKML(req.params.id)
     res.send(resp)
 });
