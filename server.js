@@ -47,14 +47,28 @@ client.on("message", message => {
 	});
 
     //not command
-	if(message.content.indexOf(config.prefix) !== 0) {
-		if (message.channel.type !== "dm") {
+    if(message.content.indexOf(config.prefix) !== 0) {
+        if (message.channel.type !== "dm") {
+            //check if there is a meetup setup in progress
+            try {
+                let meetup_started = message.channel.messages.last(25).reduce((a, e) => {
+                    if (e.content.toLowerCase().indexOf(`${config.prefix}meetup create`) !== -1)
+                        a = true
+                    return a
+                }, false)
+                if (meetup_started) {
+                    let commandFile = require(`./commands/meetup.js`);
+                    commandFile.run(client, message, ['create', 'inprogress']);
+                }
+            } catch(e) {
+                console.error(e)
+            }
+        }
+        return;
+    }
 
-		}
-		return;
-	}
 
-	//disallow commands in dms
+    //disallow commands in dms
 	if(message.content.indexOf(config.prefix) === 0 && message.channel.type === "dm")
 		return message.channel.send('Commands are not available in DM\'s.');
 
@@ -70,6 +84,8 @@ client.on("message", message => {
 	try {
 		if(Object.keys(config.aliases).includes(command))
 			command = config.aliases[command]
+
+        delete require.cache[require.resolve(`./commands/${command}.js`)];
 		let commandFile = require(`./commands/${command}.js`);
 
 		if(commandFile.require_roles && commandFile.require_roles.length > 0 &&  !message.member.roles.some(r => commandFile.require_roles.includes(r.name)))

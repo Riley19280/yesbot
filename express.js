@@ -7,9 +7,9 @@ const basefs = require('fs')
 let http = require('http');
 let https = require('https');
 
-let privateKey  = fs.readFileSync('cert/server.key', 'utf8');
-let certificate = fs.readFileSync('cert/server.crt', 'utf8');
-let credentials = {key: privateKey, cert: certificate};
+// let privateKey  = fs.readFileSync('cert/server.key', 'utf8');
+// let certificate = fs.readFileSync('cert/server.crt', 'utf8');
+// let credentials = {key: privateKey, cert: certificate};
 
 
 const express = require('express');
@@ -26,11 +26,11 @@ module.exports.init = function (client1) {
     client = client1;
 
     httpServer = http.createServer(app);
-    httpsServer = https.createServer(credentials, app);
+    // httpsServer = https.createServer(credentials, app);
 
 //Set to 8080, but can be any port, code will only come over https, even if you specified http in your Redirect URI
     httpServer.listen(80);
-    httpsServer.listen(443);
+    // httpsServer.listen(443);
 }
 
 
