@@ -1,11 +1,14 @@
 
- module.exports = {
-  
- 	 confirmPresence:confirmPresence,
-	 setLocation: setLocation,
+module.exports = {
+	confirmPresence:confirmPresence,
+	setLocation: setLocation,
 	getLocation: getLocation,
-	locationList: locationList
-
+	locationList: locationList,
+	createMeetup: createMeetup,
+	setMeetupChannel:setMeetupChannel,
+	deleteMeetup:deleteMeetup,
+	getAllMeetups:getAllMeetups,
+	editMeetupAttribute:editMeetupAttribute
 };
 
 const sanitizer = require('sanitizer');
@@ -104,6 +107,65 @@ module.exports.close = function () {
  async function locationList(guildId) {
 	 return conn.query('select username, latitude, longitude from users where guildID = ? and latitude is not null and longitude is not null',
 		 [ guildId ])
+		 .then((rows) => {
+			 if (rows[0] == null)
+				 return Promise.resolve([]);
+			 return Promise.resolve(rows)
+		 })
+		 .catch((err) => {
+			 console.error(err)
+			 return Promise.reject()
+		 })
+ }
+ 
+ async function createMeetup(member, params) {
+	 await confirmPresence(member)
+
+	 return conn.query('INSERT INTO meetups (guildID, ownerID, name, date, address, description, notes) VALUES (?,?,?,?,?,?,?)',
+		 [ member.guild.id, member.id, params.name, params.date, params.address, params.description, params.notes])
+		 .then((data) => {
+		 	return data.insertId
+		 })
+		 .catch((err) => {
+			 console.error('create meetup failed: '+ JSON.stringify(params))
+			 console.error(err)
+			 return Promise.reject(false)
+		 })
+ }
+
+ async function setMeetupChannel(meetupID, channelID) {
+	 return conn.query('UPDATE meetups set channelID = ? where id = ?',
+		 [ channelID, meetupID ])
+		 .catch((err) => {
+			 console.error('set meetup channel id failed')
+			 console.error(err)
+			 return Promise.reject(false)
+		 })
+ }
+
+ async function deleteMeetup(meetupID) {
+	 return conn.query('DELETE from meetups where id = ?',
+		 [ meetupID ])
+		 .catch((err) => {
+			 console.error('delete meetup failed')
+			 console.error(err)
+			 return Promise.reject(false)
+		 })
+ }
+
+ async function editMeetupAttribute(meetupID, attribute, value) {
+	 return conn.query(`UPDATE meetups set ${attribute} = ? where id = ?`,
+		 [ value, meetupID ])
+		 .catch((err) => {
+			 console.error(`update meetup (${meetupID}) attribute failed, ${attribute} => ${value}`)
+			 console.error(err)
+			 return Promise.reject(false)
+		 })
+ }
+
+ async function getAllMeetups(member) {
+	 return conn.query('select * from meetups where guildID = ?',
+		 [ member.guild.id ])
 		 .then((rows) => {
 			 if (rows[0] == null)
 				 return Promise.resolve([]);

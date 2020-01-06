@@ -2,6 +2,7 @@ const config = require('./config.json');
 const dbcmds = require('./database');
 const auth = require('./auth.json');
 const request = require('request');
+const rp = require('request-promise')
 
 exports.formatArr = (arr) => {
 	let str = "";
@@ -95,5 +96,22 @@ exports.locationKML = async (guildId) => {
 	}
 	string += `</Document></kml>`
 	return string
+
+}
+
+
+exports.geocodeString = async (string) => {
+
+	let geocode_url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(string)}&key=${config.maps_api_key}`
+
+	let results = JSON.parse(await rp(geocode_url))
+
+	if(results.status === 'ZERO_RESULTS')
+		return null
+
+	if(results.status === 'OK')
+		return results.results[0]
+
+	return null
 
 }

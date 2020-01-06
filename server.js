@@ -52,7 +52,7 @@ client.on("message", message => {
             //check if there is a meetup setup in progress
             try {
                 let meetup_started = message.channel.messages.last(25).reduce((a, e) => {
-                    if (e.content.toLowerCase().indexOf(`${config.prefix}meetup create`) !== -1)
+                    if (e.content.toLowerCase().indexOf(`${config.prefix}m create`) !== -1)
                         a = true
                     return a
                 }, false)

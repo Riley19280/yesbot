@@ -1,7 +1,7 @@
 const config = require('./../../config.json');
 const dbcmds = require('./../../database');
 const util = require('./../../util');
-const rp = require('request-promise')
+
 
 
 exports.desc = "Set your location.js";
@@ -27,28 +27,21 @@ exports.run = async (client, message, args) => {
 
     let location = args.splice(1).join(' ')
 
-    let geocode_url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${config.maps_api_key}`
+    let geo_data = await util.geocodeString(location)
 
-    let results = JSON.parse(await rp(geocode_url))
-
-    if(results.status === 'ZERO_RESULTS')
+    if(geo_data == null)
         return message.channel.send(`Unable to find that location. Try being more specific (city, state, etc.)`);
 
-    if(results.status === 'OK') {
-        let result = results.results[0]
-        let proper_address = result.formatted_address
-        let lat = result.geometry.location.lat
-        let lng = result.geometry.location.lng
+    let proper_address = geo_data.formatted_address
+    let lat = geo_data.geometry.location.lat
+    let lng = geo_data.geometry.location.lng
 
 
-        await dbcmds.setLocation(mem, proper_address, lat, lng).then(e => {
-            return message.channel.send(`Location set to ${proper_address}`);
-        })
-        .catch((e) => {
-            console.error(e)
-        });
-    }
-
-
-
+    await dbcmds.setLocation(mem, proper_address, lat, lng).then(e => {
+        return message.channel.send(`Location set to ${proper_address}`);
+    })
+    .catch((e) => {
+        console.error(e)
+    });
 }
+
