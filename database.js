@@ -8,7 +8,9 @@ module.exports = {
 	setMeetupChannel:setMeetupChannel,
 	deleteMeetup:deleteMeetup,
 	getAllMeetups:getAllMeetups,
-	editMeetupAttribute:editMeetupAttribute
+	editMeetupAttribute:editMeetupAttribute,
+	setMeetupStatus:setMeetupStatus,
+	getMeetupStatus:getMeetupStatus
 };
 
 const sanitizer = require('sanitizer');
@@ -144,6 +146,13 @@ module.exports.close = function () {
  }
 
  async function deleteMeetup(meetupID) {
+	 return conn.query('DELETE from meetup_statuses where id = ?',
+		 [ meetupID ])
+		 .catch((err) => {
+			 console.error('delete meetup failed')
+			 console.error(err)
+			 return Promise.reject(false)
+		 })
 	 return conn.query('DELETE from meetups where id = ?',
 		 [ meetupID ])
 		 .catch((err) => {
@@ -163,9 +172,36 @@ module.exports.close = function () {
 		 })
  }
 
- async function getAllMeetups(member) {
+ async function getAllMeetups(guild) {
 	 return conn.query('select * from meetups where guildID = ?',
-		 [ member.guild.id ])
+		 [ guild.id ])
+		 .then((rows) => {
+			 if (rows[0] == null)
+				 return Promise.resolve([]);
+			 return Promise.resolve(rows)
+		 })
+		 .catch((err) => {
+			 console.error(err)
+			 return Promise.reject()
+		 })
+ }
+
+ async function setMeetupStatus(meetupID, member, status) {
+	 return conn.query(`INSERT INTO meetup_statuses(id, userID, status) values(?,?,?) ON DUPLICATE KEY UPDATE status = ?`,
+		 [ meetupID, member.id, status, status ])
+		 .catch((err) => {
+			 console.error(`update meetup (${meetupID}) attribute failed, ${attribute} => ${value}`)
+			 console.error(err)
+			 return Promise.reject(false)
+		 })
+ }
+
+ async function getMeetupStatus(meetupID, member, fetchAll=false) {
+	let query = 'select u.username, ms.* from meetup_statuses ms join users u on u.userID = ms.userID and u.guildID = ? where id = ? '
+	if(!fetchAll)
+	 	query = `select u.username, ms.* from meetup_statuses ms join users u on u.userID = ms.userID and u.guildID = ? where id = ? and u.userID = ${member.id}`
+	return conn.query(query,
+		 [ member.guild.id, meetupID ])
 		 .then((rows) => {
 			 if (rows[0] == null)
 				 return Promise.resolve([]);

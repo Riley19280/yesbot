@@ -8,7 +8,7 @@ exports.params = ['@mention'];
 
 
 exports.run = async (client, message, args) => {
-    let meetup = (await dbcmds.getAllMeetups(message.member)).reduce((a, x) => x.name === message.channel.name.replace(/-/g, ' ') ? x : a, null)
+    let meetup = (await dbcmds.getAllMeetups(message.member.guild)).reduce((a, x) => x.name === message.channel.name.replace(/-/g, ' ') ? x : a, null)
 
     if(meetup == null)
         return message.channel.send("This command must be used in a meeetup channel.");

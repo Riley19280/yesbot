@@ -38,7 +38,6 @@ exports.run = (client, message, args) => {
     }
 
     try {
-        delete require.cache[require.resolve(`./${filename}/${args[0]}.js`)];
         let commandFile = require(`./${filename}/${args[0]}.js`);
         commandFile.run(client, message, args);
     } catch (err) {

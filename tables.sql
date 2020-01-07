@@ -1,4 +1,3 @@
-DO NOT RUN THIS FILE ALL DATA WILL BE ERASED
 
 /* --------- Backing up data ----------*/
 create table meetup_statuses_old as select * from meetup_statuses;
@@ -65,19 +64,33 @@ create table meetup_statuses (
 id INT NOT NULL,
 userID varchar(32) not null,
 status varchar(255) not null,
-FOREIGN KEY (id) REFERENCES meetups(id)
+FOREIGN KEY (id) REFERENCES meetups(id)  ON DELETE CASCADE,
+PRIMARY KEY (id, userID)
 );
 
 
 /* --------- Insert Data ----------*/
-/*TODO*/
+INSERT IGNORE INTO servers (guildID, name, deleted, config)
+  select guildID, name, deleted, config FROM servers_old;
 
-/* --------- Remove temp tables ----------
+INSERT IGNORE INTO users (guildID, userID, username, points, location, latitude, longitude, avatar, join_date)
+  select guildID, userID, username, points, location, latitude, longitude, avatar, join_date FROM users_old;
+
+INSERT IGNORE INTO logs (id, userID, eventType, description)
+  select id, userID, eventType, description FROM logs_old;
+
+INSERT IGNORE INTO meetups (id, guildID, ownerID, channelID, active, name, date, address, description, notes)
+  select id, guildID, ownerID, channelID, active, name, date, address, description, notes FROM meetups_old;
+
+INSERT IGNORE INTO meetup_statuses (id, userID, status)
+  select id, userID, status FROM meetup_statuses_old;
+
+/* --------- Remove temp tables ----------*/
 drop table if exists meetup_statuses_old;
 drop table if exists meetups_old;
 drop table if exists logs_old;
 drop table if exists users_old;
-drop table if exists servers_old; 
-*/
+drop table if exists servers_old;
+
 
 

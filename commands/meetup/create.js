@@ -23,9 +23,7 @@ exports.run = async (client, message, args) => {
 
     // console.log(prev_messages)
 
-    if(args.length === 1 && args[0] === 'create') {
-        message.channel.send(responses.welcome + ` <@${message.member.id}>!\n${responses.name}`)
-    } else if (args.length === 2 && args[1] === 'inprogress') {
+   if (args.length === 2 && args[1] === 'inprogress') {
 
         let original_msg = prev_messages.filter(e => e.content.indexOf(responses.welcome) !== -1 && e.content.indexOf(responses.finished) === -1 )
         if(original_msg.length === 0) return
@@ -56,20 +54,22 @@ exports.run = async (client, message, args) => {
                 break
             }
         }
-    }
+    } else if(args[0] === 'create') {
+       message.channel.send(responses.welcome + ` <@${message.member.id}>!\n${responses.name}`)
+   }
 
 }
 
 
 async function createMeetup(member, meetup_responses, original_msg) {
     let meetup_id = await dbcmds.createMeetup(member, meetup_responses)
-    console.log('meetup id', meetup_id)
 
     let category = member.guild.channels.find(x => x.name === 'Meetups')
     if(category == null) {
         console.error(`unable to find Category \'Meetups\' in guild ${member.guild.name}`)
         return
     }
+    let announcement_channel = await member.guild.channels.find(x => x.name.toLowerCase() === 'announcements' && x.parent && x.parent.name.toLowerCase() === 'meetups')
     let channel = await member.guild.createChannel(meetup_responses.name,
 {
             type: 'text',
@@ -87,15 +87,31 @@ async function createMeetup(member, meetup_responses, original_msg) {
         }
     )
 
+    let address = await util.geocodeString(meetup_responses.address)
     let embed = new Discord.RichEmbed()
         .setTitle(meetup_responses.name)
         .setColor('#0166ff')
         .addField('Description', meetup_responses.description)
         .addField('Date', meetup_responses.date)
-        .addField('Address', (await util.geocodeString(meetup_responses.address)).formatted_address)
+        .addField('Address', address == null ? 'Unknown' : address.formatted_address)
         .addField('Notes', meetup_responses.notes)
     await channel.send(embed).then(m => m.pin())
+    let announcement_msg = await announcement_channel.send(embed.addBlankField().addField('Join the meetup!','React with :thumbsup: to join the meetup chat!'))
+    require('../../meetupReactionHandler').registerMeeetupListener(announcement_msg, channel.id)
+    await announcement_msg.react('👍')
 
+    let instructionMsg = `
+__**Commands to manage a meetup**__
+    *${config.prefix}meetup edit <attribute> <value>:* Edit the meetup information
+    *${config.prefix}meetup delete:* Delete the meetup group
+    *${config.prefix}meetup transfer <@mention>:* Transfer ownership of the meetup group
+    *${config.prefix}meetup status (@mention):* Display you or the person mentioned status for the meetup
+    *${config.prefix}meetup status <status>*: Set your meetup status
+    *${config.prefix}meetup leave:* Leave the meetup group
+
+    If you need additional help use **${config.prefix}help meetup <command>**`
+
+    await channel.send(instructionMsg).then(m => m.pin())
 
     await dbcmds.setMeetupChannel(meetup_id, channel.id)
 }

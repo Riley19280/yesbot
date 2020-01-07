@@ -32,6 +32,9 @@ exports.run = async (client, message, args) => {
 
     let destination = message.content.replace(/<.*?>/g, '').split(' ').slice(1).join(' ')
 
+    if(destination === '')
+        return message.channel.send('Please specify a destination.')
+
     let locations = {}
     let no_location = []
 
