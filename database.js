@@ -10,7 +10,11 @@ module.exports = {
 	getAllMeetups:getAllMeetups,
 	editMeetupAttribute:editMeetupAttribute,
 	setMeetupStatus:setMeetupStatus,
-	getMeetupStatus:getMeetupStatus
+	getMeetupStatus:getMeetupStatus,
+	getAllChallenges:getAllChallenges,
+	addChallenge:addChallenge,
+	deleteChallenge:deleteChallenge,
+	getChallenge:getChallenge
 };
 
 const sanitizer = require('sanitizer');
@@ -146,13 +150,6 @@ module.exports.close = function () {
  }
 
  async function deleteMeetup(meetupID) {
-	 return conn.query('DELETE from meetup_statuses where id = ?',
-		 [ meetupID ])
-		 .catch((err) => {
-			 console.error('delete meetup failed')
-			 console.error(err)
-			 return Promise.reject(false)
-		 })
 	 return conn.query('DELETE from meetups where id = ?',
 		 [ meetupID ])
 		 .catch((err) => {
@@ -211,4 +208,57 @@ module.exports.close = function () {
 			 console.error(err)
 			 return Promise.reject()
 		 })
+ }
+
+ async function addChallenge(message) {
+	 return conn.query(`INSERT INTO challenges (message) VALUES (?)`,
+		 [ message ])
+		 .then((data) => {
+			 return data.insertId
+		 })
+		 .catch((err) => {
+			 console.error(err)
+			 return Promise.reject()
+		 })
+ }
+
+ async function getAllChallenges() {
+	 return conn.query('select * from challenges ',
+		 [ ])
+		 .then((rows) => {
+			 if (rows[0] == null)
+				 return Promise.resolve([]);
+			 return Promise.resolve(rows)
+		 })
+		 .catch((err) => {
+			 console.error(err)
+			 return Promise.reject()
+		 })
+ }
+
+ async function deleteChallenge(id) {
+	 return conn.query('DELETE FROM challenges where id = ?',
+		 [ id ])
+		 .catch((err) => {
+			 console.error(err)
+			 return Promise.reject()
+		 })
+ }
+
+ async function getChallenge() {
+	 let challenges = await getAllChallenges()
+	 if(challenges.length === 0) return 'No challenges in database.'
+	 let min_bin = Math.min(...challenges.map(c => c.bin))
+	 let max_bin = Math.max(...challenges.map(c => c.bin))
+	 challenges = challenges.filter(x => x.bin === min_bin)
+	 let challenge  = challenges[Math.floor(Math.random() * challenges.length)]
+
+	 await conn.query('UPDATE challenges SET bin = bin + 1 where id = ?',
+		 [ challenge.id ])
+		 .catch((err) => {
+			 console.error(err)
+			 return Promise.reject()
+		 })
+
+	 return challenge
  }

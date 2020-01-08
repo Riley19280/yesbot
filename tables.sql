@@ -5,6 +5,7 @@ create table meetups_old as select * from meetups;
 create table logs_old as select * from logs;
 create table users_old as select * from users;
 create table servers_old as select * from servers;
+create table challenges_old as select * from challenges;
 
 /* --------- Dropping tables ----------*/
 
@@ -68,6 +69,11 @@ FOREIGN KEY (id) REFERENCES meetups(id)  ON DELETE CASCADE,
 PRIMARY KEY (id, userID)
 );
 
+create table challenges (
+id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+message MEDIUMTEXT NOT NULL,
+bin INT NOT NULL DEFAULT 0
+);
 
 /* --------- Insert Data ----------*/
 INSERT IGNORE INTO servers (guildID, name, deleted, config)
@@ -85,12 +91,16 @@ INSERT IGNORE INTO meetups (id, guildID, ownerID, channelID, active, name, date,
 INSERT IGNORE INTO meetup_statuses (id, userID, status)
   select id, userID, status FROM meetup_statuses_old;
 
+INSERT IGNORE INTO challenges (id, message, bin)
+  select id, message, bin FROM challenges_old;
+
 /* --------- Remove temp tables ----------*/
 drop table if exists meetup_statuses_old;
 drop table if exists meetups_old;
 drop table if exists logs_old;
 drop table if exists users_old;
 drop table if exists servers_old;
+drop table if exists challenges_old;
 
 
 

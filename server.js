@@ -85,7 +85,7 @@ client.on("message", message => {
 		if(Object.keys(config.aliases).includes(command))
 			command = config.aliases[command]
 
-        delete require.cache[require.resolve(`./commands/${command}.js`)];
+        //delete require.cache[require.resolve(`./commands/${command}.js`)];
 		let commandFile = require(`./commands/${command}.js`);
 
 		if(commandFile.require_roles && commandFile.require_roles.length > 0 &&  !message.member.roles.some(r => commandFile.require_roles.includes(r.name)))
