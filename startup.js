@@ -4,7 +4,6 @@ const { spawn } = require('child_process')
 const dbcmds = require('./database');
 const reactionHandler = require('./meetupReactionHandler')
 const moment = require('moment');
-const momentTimezone = require('moment-timezone');
 
 let webserv, client;
 
