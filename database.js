@@ -249,13 +249,14 @@ module.exports.close = function () {
 	 let challenges = await getAllChallenges()
 	 if(challenges.length === 0) return 'No challenges in database.'
 	 let min_bin = Math.min(...challenges.map(c => c.bin))
-	 let max_bin = Math.max(...challenges.map(c => c.bin))
+	 // let max_bin = Math.max(...challenges.map(c => c.bin))
 	 challenges = challenges.filter(x => x.bin === min_bin)
 	 let challenge  = challenges[Math.floor(Math.random() * challenges.length)]
 
 	 await conn.query('UPDATE challenges SET bin = bin + 1 where id = ?',
 		 [ challenge.id ])
 		 .catch((err) => {
+		 	 console.log('get challenge error')
 			 console.error(err)
 			 return Promise.reject()
 		 })
