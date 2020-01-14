@@ -23,9 +23,10 @@ async function dailyChallengeHandler() {
 	if(date.getHours() === 0 && date.getMinutes() === 0) {
 		if(lastTrigger == null || date.getTime() - lastTrigger.getTime() > 80000000) {
 			for(let guild of client.guilds.array()) {
-				let channel = await guild.channels.find(x => x.name.toLowerCase() === 'daily-challenge')
+				let channel = await guild.channels.find(x => x.name.toLowerCase() === 'daily-challenge');
+				let theChosenMember = guild.members.random();
 				if(channel == null) return
-				let res = await channel.send(`**${date.toString().match(/.*? .*? .*? /)[0].trim()}:** ${(await dbcmds.getChallenge()).message}`)
+				let res = await channel.send(`**${date.toString().match(/.*? .*? .*? /)[0].trim()}:** <@${theChosenMember.id}> -> ${(await dbcmds.getChallenge()).message}`);
 				console.log(`Daily challenge sent at ${date.toLocaleString()}`)
 				lastTrigger = date
 			}
