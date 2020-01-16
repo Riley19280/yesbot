@@ -68,8 +68,8 @@ client.on("message", message => {
 			}
 		}
 		if (message.content === '@curiosity') {
-			let theChosenOne = client.guilds.array().find(x => x.name.toLowerCase() === 'yes north carolina').members.random();
-			let randomQuestion = questions.split(',')[Math.floor(Math.random() * questions.split(',').length)];
+			let theChosenOne = message.member.guild.members.random();
+			let randomQuestion = questions.split('\n')[Math.floor(Math.random() * questions.split('\n').length)];
 			return message.channel.send(`<@${message.member.id}> ==> <@${theChosenOne.id}> ${randomQuestion}`)
 		}
 		return;
@@ -93,7 +93,7 @@ client.on("message", message => {
 		if (Object.keys(config.aliases).includes(command))
 			command = config.aliases[command]
 
-		delete require.cache[require.resolve(`./commands/${command}.js`)];
+		// delete require.cache[require.resolve(`./commands/${command}.js`)];
 		let commandFile = require(`./commands/${command}.js`);
 
 		if (commandFile.require_roles && commandFile.require_roles.length > 0 && !message.member.roles.some(r => commandFile.require_roles.includes(r.name)))
