@@ -15,29 +15,23 @@ exports.run = (c) => {
 
 	reactionHandler.init(client)
 
-	setInterval(dailyChallengeHandler, 1000 * 1)
+	setInterval(dailyChallengeHandler, 1000 * 15)
 };
 
 let lastTrigger = null
 async function dailyChallengeHandler() {
-	let date = new Date();
-	let estDate = moment.tz('America/New_York').toDate();
+	let estDate = moment.tz('America/New_York');
 
-	if (
-		(estDate.getHours() === 9 || estDate.getHours === 09)
-		&& estDate.getMinutes() === 00
-		&& estDate.toLocaleString().slice(-2) === 'AM'
-	) {
-		console.log(estDate.getHours(), estDate.getMinutes(), lastTrigger, lastTrigger != null ? estDate.getTime() - lastTrigger.getTime() : '')
-		if (lastTrigger == null || estDate.getTime() - lastTrigger.getTime() > 80000000) {
+	if (estDate.hours() === 8 && estDate.minutes() === 0) {
+		if (lastTrigger == null || estDate.valueOf() - lastTrigger.valueOf() > 80000000) {
 			for (let guild of client.guilds.array()) {
-				let channel = await guild.channels.find(x => x.name.toLowerCase() === 'test-channel');
+				let channel = await guild.channels.find(x => x.name.toLowerCase() === 'daily-challenge');
 				let theChosenMember = guild.members.random();
-				if (channel == null) return
-				let res = await channel.send(`**${date.toString().match(/.*? .*? .*? /)[0].trim()}:** <@${theChosenMember.id}> => ${(await dbcmds.getChallenge()).message}`);
-				console.log(`Daily challenge sent at ${estDate.toLocaleString()}`)
-				lastTrigger = estDate
+				if (channel == null) continue
+				let res = await channel.send(`**${estDate.format('ddd, MMM Do')}:** <@${theChosenMember.id}> => ${(await dbcmds.getChallenge()).message}`);
+				console.log(`Daily challenge sent at ${estDate.format('LLLL')}`)
 			}
+            lastTrigger = estDate
 		}
 	}
 
