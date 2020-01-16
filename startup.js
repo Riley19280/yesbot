@@ -23,7 +23,7 @@ async function dailyChallengeHandler() {
 	let date = new Date();
 	let estDate = moment.tz('America/New_York').toDate();
 
-	if(estDate.getHours() === 12 && estDate.getMinutes() === 00 && estDate.toLocaleString().slice(-2) === 'PM') {
+	if(estDate.getHours() === 12 && estDate.getMinutes() === 0 && estDate.toLocaleString().slice(-2) === 'PM') {
 		console.log(date.getHours(), date.getMinutes(), lastTrigger, lastTrigger != null ? date.getTime() - lastTrigger.getTime() : '')
 		if(lastTrigger == null || date.getTime() - lastTrigger.getTime() > 80000000) {
 			for(let guild of client.guilds.array()) {
