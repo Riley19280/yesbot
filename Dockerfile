@@ -56,10 +56,10 @@ COPY ./package.json .
 RUN npm install
 RUN npm install supervisor -g
 
-COPY ./docker/start.sh .
+COPY containerStart.sh .
 COPY ./ .
 
 EXPOSE 80
 EXPOSE 443
 
-CMD [ "bash", "start.sh" ]
+CMD [ "bash", "containerStart.sh" ]

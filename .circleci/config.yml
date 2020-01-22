@@ -1,0 +1,18 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+orbs:
+  aws-ecr: circleci/aws-ecr@6.7.0
+version: 2.1
+workflows:
+  build_and_push_image:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME
+          aws-access-key-id: ACCESS_KEY_ID_ENV_VAR_NAME
+          aws-secret-access-key: SECRET_ACCESS_KEY_ENV_VAR_NAME
+          context: rileystech-deploy
+          region: AWS_REGION_ENV_VAR_NAME
+          repo: 'rileystech'
+          tag: 'yesbot'
