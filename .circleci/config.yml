@@ -5,6 +5,26 @@
 orbs:
   aws-ecr: circleci/aws-ecr@6.7.0
 version: 2.1
+jobs:
+  deploy:
+    machine:
+        enabled: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "7c:cd:32:bc:4e:5c:6f:96:02:f3:90:f9:17:90:7f:7e"
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST \
+            " \
+            aws configure set aws_access_key_id $ACCESS_KEY_ID_ENV_VAR_NAME --profile circleci; \
+            aws configure set aws_secret_access_key $SECRET_ACCESS_KEY_ENV_VAR_NAME --profile circleci; \
+            aws configure set region $AWS_REGION_ENV_VAR_NAME --profile circleci; \
+            ${aws ecr get-login --no-include-email --profile circleci} \
+            cd scripts; \
+            bash ${CIRCLE_PROJECT_REPONAME}.sh; \
+            "
 workflows:
   build_and_push_image:
     jobs:
@@ -16,3 +36,7 @@ workflows:
           region: AWS_REGION_ENV_VAR_NAME
           repo: 'rileystech'
           tag: 'yesbot'
+      - deploy:
+          context: rileystech-deploy
+          requires:
+            - aws-ecr/build-and-push-image
