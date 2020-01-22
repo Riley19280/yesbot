@@ -7,8 +7,7 @@ orbs:
 version: 2.1
 jobs:
   deploy:
-    machine:
-        enabled: true
+    executor: aws-ecr/default
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -16,15 +15,17 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST \
+            aws configure set aws_access_key_id $ACCESS_KEY_ID_ENV_VAR_NAME --profile circleci;
+            aws configure set aws_secret_access_key $SECRET_ACCESS_KEY_ENV_VAR_NAME --profile circleci;
+            aws configure set region $AWS_REGION_ENV_VAR_NAME --profile circleci;
+            AWS_LOGIN_COMMAND=$(aws ecr get-login --no-include-email --profile circleci)
+            ssh $SSH_USER@$SSH_HOST -i rileystech.pem \
             " \
-            aws configure set aws_access_key_id $ACCESS_KEY_ID_ENV_VAR_NAME --profile circleci; \
-            aws configure set aws_secret_access_key $SECRET_ACCESS_KEY_ENV_VAR_NAME --profile circleci; \
-            aws configure set region $AWS_REGION_ENV_VAR_NAME --profile circleci; \
-            ${aws ecr get-login --no-include-email --profile circleci} \
+            ${AWS_LOGIN_COMMAND};\
             cd scripts; \
-            bash ${CIRCLE_PROJECT_REPONAME}.sh; \
+            bash ${CIRCLE_PROJECT_REPONAME}.sh;
             "
+
 workflows:
   build_and_push_image:
     jobs:
