@@ -1,4 +1,4 @@
-const config = require('./../../config.json');
+
 const dbcmds = require('./../../database');
 const util = require('./../../util');
 
@@ -17,7 +17,7 @@ exports.run = async (client, message, args) => {
     } catch (e) {}
 
     if(mem != null) {//if there is a mention
-        if (!message.member.roles.some(r => config.admin_roles.includes(r.name))) {
+        if (!message.member.roles.some(r => process.env.ADMIN_ROLES.split('|').includes(r.name))) {
             return message.channel.send("You don't have permission to set others' location.");
         }
     }

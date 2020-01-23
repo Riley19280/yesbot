@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const config = require('./../../config.json');
+
 const dbcmds = require('./../../database');
 const util = require('./../../util');
 
@@ -102,14 +102,14 @@ async function createMeetup(member, meetup_responses, original_msg) {
 
     let instructionMsg = `
 __**Commands to manage a meetup**__
-    *${config.prefix}meetup edit <attribute> <value>:* Edit the meetup information
-    *${config.prefix}meetup delete:* Delete the meetup group
-    *${config.prefix}meetup transfer <@mention>:* Transfer ownership of the meetup group
-    *${config.prefix}meetup status (@mention):* Display you or the person mentioned status for the meetup
-    *${config.prefix}meetup status <status>*: Set your meetup status
-    *${config.prefix}meetup leave:* Leave the meetup group
+    *${process.env.PREFIX}meetup edit <attribute> <value>:* Edit the meetup information
+    *${process.env.PREFIX}meetup delete:* Delete the meetup group
+    *${process.env.PREFIX}meetup transfer <@mention>:* Transfer ownership of the meetup group
+    *${process.env.PREFIX}meetup status (@mention):* Display you or the person mentioned status for the meetup
+    *${process.env.PREFIX}meetup status <status>*: Set your meetup status
+    *${process.env.PREFIX}meetup leave:* Leave the meetup group
 
-    If you need additional help use **${config.prefix}help meetup <command>**`
+    If you need additional help use **${process.env.PREFIX}help meetup <command>**`
 
     await channel.send(instructionMsg).then(m => m.pin())
 

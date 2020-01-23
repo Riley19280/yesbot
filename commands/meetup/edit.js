@@ -1,4 +1,4 @@
-const config = require('./../../config.json');
+
 const dbcmds = require('./../../database');
 const util = require('./../../util');
 const Discord = require('discord.js')
@@ -19,7 +19,7 @@ exports.run = async (client, message, args) => {
         return message.channel.send(`Valid attributes are *<${exports.params.join(', ')}>*`)
     }
 
-    if (!message.member.roles.some(r => config.admin_roles.includes(r.name)) && message.member.id !== meetup.ownerID) {
+    if (!message.member.roles.some(r => process.env.ADMIN_ROLES.split('|').includes(r.name)) && message.member.id !== meetup.ownerID) {
         return message.channel.send("You don't have permission to edit this meetup.");
     }
 

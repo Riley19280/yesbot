@@ -1,4 +1,4 @@
-const config = require('./config.json');
+
 const util = require('./util');
 const { spawn } = require('child_process')
 const dbcmds = require('./database');

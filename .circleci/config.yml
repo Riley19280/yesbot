@@ -19,7 +19,7 @@ jobs:
             aws configure set aws_secret_access_key $SECRET_ACCESS_KEY_ENV_VAR_NAME --profile circleci;
             aws configure set region $AWS_REGION_ENV_VAR_NAME --profile circleci;
             AWS_LOGIN_COMMAND=$(aws ecr get-login --no-include-email --profile circleci)
-            ssh $SSH_USER@$SSH_HOST -i rileystech.pem \
+            ssh $SSH_USER@$SSH_HOST \
             " \
             ${AWS_LOGIN_COMMAND};\
             cd scripts; \

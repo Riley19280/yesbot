@@ -1,6 +1,6 @@
-const config = require('./config.json');
+
 const dbcmds = require('./database');
-const auth = require('./auth.json');
+
 const request = require('request');
 const rp = require('request-promise')
 
@@ -21,7 +21,7 @@ exports.setChannelParent = (channelid,parent_id) => {
 	var options = {
 		url: 'https://discordapp.com/api/v6/channels/'+channelid,
 		headers: {
-			'Authorization': 'Bot ' + auth.token,
+			'Authorization': 'Bot ' + process.env.DISCORD_LOGIN_TOKEN,
 			'content-type': 'application/json'
 		},
 		method: 'PATCH',
@@ -62,7 +62,7 @@ exports.locationKML = async (guildId) => {
 	let locations = await dbcmds.locationList(guildId)
 
 	let iconLink
-	if(config.prefix !== '!')
+	if(process.env.PREFIX !== '!')
 		iconLink = 'https://www.dropbox.com/s/j9oht245flp66qg/marker.png?dl=1'
 	else
 		iconLink = 'https://yestheory.rileystech.com/marker.png'
@@ -102,7 +102,7 @@ exports.locationKML = async (guildId) => {
 
 exports.geocodeString = async (string) => {
 
-	let geocode_url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(string)}&key=${config.maps_api_key}`
+	let geocode_url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(string)}&key=${process.env.MAPS_API_KEY}`
 
 	let results = JSON.parse(await rp(geocode_url))
 

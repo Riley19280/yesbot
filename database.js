@@ -20,16 +20,16 @@ module.exports = {
 const sanitizer = require('sanitizer');
 
 const mysql = require('promise-mysql');
-const auth = require('./auth.json');
- const config = require('./config.json');
+
+
 
 
  let conn;
  const dbconfig = {
-	 user: auth.database.user,
-	 password: auth.database.password,
-	 host: auth.database.host,
-	 database: auth.database.database
+	 user: process.env.DB_USER,
+	 password: process.env.DB_PASSWORD,
+	 host: process.env.DB_HOST,
+	 database: process.env.DB_DATABASE
  };
 
 

@@ -1,4 +1,4 @@
-const config = require('./../../config.json');
+
 const dbcmds = require('./../../database');
 const util = require('./../../util');
 
@@ -6,7 +6,7 @@ exports.desc = "Adds a challenge to the list of challenges";
 
 exports.params = ['challenge'];
 
-exports.require_roles = config.admin_roles
+exports.require_roles = process.env.ADMIN_ROLES.split('')
 
 exports.run = async (client, message, args) => {
 

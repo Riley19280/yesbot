@@ -1,4 +1,4 @@
-const config = require('./../config.json');
+
 const dbcmds = require('./../database');
 const util = require('./../util');
 var Promise = require("bluebird");
@@ -50,7 +50,7 @@ exports.run = async (client, message, args) => {
     })
 
     let units = 'imperial'
-    let dist_matrix_url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=${units}&origins=${Object.keys(locations).map(k => locations[k]).join('|')}&destinations=${destination}&key=${config.maps_api_key}`
+    let dist_matrix_url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=${units}&origins=${Object.keys(locations).map(k => locations[k]).join('|')}&destinations=${destination}&key=${process.env.MAPS_API_KEY}`
 
     let results = JSON.parse(await rp(dist_matrix_url))
     // console.log(JSON.stringify(results))

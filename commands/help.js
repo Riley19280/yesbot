@@ -1,4 +1,4 @@
-const config = require('./../config.json');
+
 const dbcmds = require('./../database');
 const util = require('./../util');
 const fs = require("fs");
@@ -21,7 +21,7 @@ catch(err){
 	return message.channel.send('An error has occurred.');
 }
 files.forEach(file => {
-	if(config.excluded_command_files.includes(file))
+	if(process.env.EXCLUDED_COMMAND_FILES.split('|').includes(file))
 		return;
 	valid.push(file.split(".")[0]);
 });
@@ -39,7 +39,7 @@ exports.run = (client, message, args) => {
 		return;
 	}
 	files.forEach(file => {
-		if(config.excluded_command_files.includes(file))
+		if(process.env.EXCLUDED_COMMAND_FILES.split('|').includes(file))
 			return;
 		allcmds.push(file.split(".")[0]);
 	});
@@ -48,7 +48,7 @@ exports.run = (client, message, args) => {
 	{//is not a subcommand of help
 		
 		if(args[0] == null){
-			message.channel.send(`__**Usage:**__ ${config.prefix}help <*command, list*> \nParameters in <> are mandatory, parameters in () are optional.`);
+			message.channel.send(`__**Usage:**__ ${process.env.PREFIX}help <*command, list*> \nParameters in <> are mandatory, parameters in () are optional.`);
 			return;
 		}
 		
@@ -65,7 +65,7 @@ exports.run = (client, message, args) => {
 			let subcmdFile = require(`./${args[0]}/${args[1]}.js`);
 			let params = util.formatArr(subcmdFile.params);
 			if(params != "") params = '<'+params+'>';
-			let usage = `__**Usage:**__ ${config.prefix}${args[0]} ${args[1]} ${params} ${subcmdFile.optionalParam || ""}`;
+			let usage = `__**Usage:**__ ${process.env.PREFIX}${args[0]} ${args[1]} ${params} ${subcmdFile.optionalParam || ""}`;
 			message.channel.send(usage);
 		}
 		
@@ -73,7 +73,7 @@ exports.run = (client, message, args) => {
 		else{
 			let params = util.formatArr(commandFile.params);
 			if(params != "") params = '<'+params+'>';
-			let usage = `__**Usage:**__ ${config.prefix}${args[0]} ${params} ${commandFile.optionalParam || ""}`;
+			let usage = `__**Usage:**__ ${process.env.PREFIX}${args[0]} ${params} ${commandFile.optionalParam || ""}`;
 			message.channel.send(usage);
 		}
 		

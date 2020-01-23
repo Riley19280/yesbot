@@ -1,10 +1,11 @@
+require('dotenv').config()
 const Discord = require("discord.js");
 
 
 const client = new Discord.Client();
 
-const auth = require('./auth.json');
-const config = require('./config.json');
+
+
 const dbcmds = require('./database');
 const util = require('./util');
 const fs = require("fs");
@@ -44,18 +45,19 @@ client.on("message", message => {
 		return;
 	}
 	files.forEach(file => {
-		if (config.excluded_command_files.includes(file))
+
+		if (process.env.EXCLUDED_COMMAND_FILES.split('|').includes(file))
 			return;
 		valid.push(file.split(".")[0]);
 	});
 
 	//not command
-	if (message.content.indexOf(config.prefix) !== 0) {
+	if (message.content.indexOf(process.env.PREFIX) !== 0) {
 		if (message.channel.type !== "dm") {
 			//check if there is a meetup setup in progress
 			try {
 				let meetup_started = message.channel.messages.last(25).reduce((a, e) => {
-					if (e.content.toLowerCase().indexOf(`${config.prefix}meetup create`) !== -1)
+					if (e.content.toLowerCase().indexOf(`${process.env.PREFIX}meetup create`) !== -1)
 						a = true
 					return a
 				}, false)
@@ -77,21 +79,22 @@ client.on("message", message => {
 
 
 	//disallow commands in dms
-	if (message.content.indexOf(config.prefix) === 0 && message.channel.type === "dm")
+	if (message.content.indexOf(process.env.PREFIX) === 0 && message.channel.type === "dm")
 		return message.channel.send('Commands are not available in DM\'s.');
 
 	// This is the best way to define args. Trust me.
-	const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+	const args = message.content.slice(process.env.PREFIX.length).trim().split(/ +/g);
 	let command = args.shift().toLowerCase();
 
+	let aliases = process.env.COMMAND_ALIASES.split('|').reduce((a,x) => {a[x.split('=')[0]] = x.split('=')[1]; return a},{})
 	//make sure it is a valid command
-	if (!valid.includes(command) && !Object.keys(config.aliases).includes(command))
+	if (!valid.includes(command) && !Object.keys(aliases).includes(command))
 		return message.channel.send('Unrecognized Command!');
 
 
 	try {
-		if (Object.keys(config.aliases).includes(command))
-			command = config.aliases[command]
+		if (Object.keys(aliases).includes(command))
+			command = aliases[command]
 
 		// delete require.cache[require.resolve(`./commands/${command}.js`)];
 		let commandFile = require(`./commands/${command}.js`);
@@ -119,4 +122,4 @@ fs.readdir("./events/", (err, files) => {
 });
 
 
-client.login(auth.token);
+client.login(process.env.DISCORD_LOGIN_TOKEN);

@@ -1,4 +1,4 @@
-const config = require('./../config.json');
+
 const dbcmds = require('./../database');
 const util = require('./../util');
 const request = require('request-promise');
@@ -7,7 +7,7 @@ exports.desc = "Prints debug info";
 
 exports.params = ["channels","roles","guilds","users"];
 
-exports.require_roles = config.admin_roles
+exports.require_roles = process.env.ADMIN_ROLES.split('|')
 
 exports.run = (client, message, args) => {
 	switch(args[0]){

@@ -1,4 +1,4 @@
-const config = require('./config.json');
+
 const util = require('./util');
 const Discord = require('discord.js')
 const dbcmds = require('./database');

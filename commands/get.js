@@ -1,4 +1,4 @@
-const config = require('./../config.json');
+
 const dbcmds = require('./../database');
 const util = require('./../util');
 const fs = require("fs");
@@ -19,7 +19,7 @@ exports.desc = "Used to get various user attributes.";
 		return;
 	}
 	files.forEach(file => {
-		if(config.excluded_command_files.includes(file))
+		if(process.env.EXCLUDED_COMMAND_FILES.split('|').includes(file))
 			return;
 		valid.push(file.split(".")[0]);
 	});

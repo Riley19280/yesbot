@@ -1,5 +1,5 @@
-const auth = require('./auth.json');
-const config = require('./config.json');
+
+
 const dbcmds = require('./database');
 const util = require('./util');
 const fs = require('fs-extra');

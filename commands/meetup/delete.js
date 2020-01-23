@@ -1,4 +1,4 @@
-const config = require('./../../config.json');
+
 const dbcmds = require('./../../database');
 const util = require('./../../util');
 
@@ -13,7 +13,7 @@ exports.run = async (client, message, args) => {
     if(meetup == null)
         return message.channel.send("This command must be used in a meeetup channel.");
 
-    if (!message.member.roles.some(r => config.admin_roles.includes(r.name)) && message.member.id !== meetup.ownerID)
+    if (!message.member.roles.some(r => process.env.ADMIN_ROLES.split('|').includes(r.name)) && message.member.id !== meetup.ownerID)
         return message.channel.send("You don't have permission to delete that meetup.");
 
     let announcement_channel = await message.member.guild.channels.find(x => x.name.toLowerCase() === 'announcements' && x.parent && x.parent.name.toLowerCase() === 'meetups')

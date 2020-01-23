@@ -1,4 +1,4 @@
-const config = require('./../../config.json');
+
 const dbcmds = require('./../../database');
 const util = require('./../../util');
 const fs = require("fs");
@@ -20,7 +20,7 @@ exports.run = (client, message, args) => {
 		return;
 	}
 	files.forEach(file => {
-		if(config.excluded_command_files.includes(file))
+		if(process.env.EXCLUDED_COMMAND_FILES.split('|').includes(file))
 			return;
 		
 		if(file.match(".js$"))
