@@ -17,14 +17,24 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.5",
     "require-text": "0.0.1",
-    "sanitizer": "^0.1.3"
+    "sanitizer": "^0.1.3",
+    "tailwindcss": "^1.2.0-canary.5"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "tailwind": "npx tailwind build ./webserver/css.css -c ./tailwind.config.js -o ./webserver/output.css"
   },
   "author": "Riley Schoppa",
   "license": "ISC",
-  "keywords": []
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Riley19280/yesbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Riley19280/yesbot/issues"
+  },
+  "homepage": "https://github.com/Riley19280/yesbot#readme"
 }

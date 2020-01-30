@@ -49,6 +49,9 @@ app.get('/', async (req,res) =>  {
 app.get('/map', async (req,res) =>  {
     res.sendFile('map.html', { root: './webserver' })
 });
+app.get('/output.css', async (req,res) =>  {
+    res.sendFile('output.css', { root: './webserver' })
+});
 //
 // app.get('/marker.png', async (req,res) =>  {
 //     res.sendFile('marker.png', { root: './webserver' })
