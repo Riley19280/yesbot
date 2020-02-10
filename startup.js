@@ -28,7 +28,7 @@ async function dailyChallengeHandler() {
 				let channel = await guild.channels.find(x => x.name.toLowerCase() === 'daily-challenge');
 				let theChosenMember = guild.members.random();
 				if (channel == null) continue
-				let res = await channel.send(`**${estDate.format('ddd, MMM Do')}:** <@${theChosenMember.id}> => ${(await dbcmds.getChallenge()).message}`);
+				let res = await channel.send(`**${estDate.format('ddd, MMM Do')}:** <@432732486057852931> => ${(await dbcmds.getChallenge()).message}`);
 				console.log(`Daily challenge sent at ${estDate.format('LLLL')}`)
 			}
             lastTrigger = estDate
