@@ -6,6 +6,8 @@ const reactionHandler = require('./meetupReactionHandler')
 const moment = require('moment');
 const momentTimezone = require('moment-timezone');
 
+const ikeaAlerter = require('./ikeaAlerter')
+
 let webserv, client;
 
 exports.run = (c) => {
@@ -15,6 +17,7 @@ exports.run = (c) => {
 	reactionHandler.init(client)
 
 	setInterval(dailyChallengeHandler, 1000 * 15)
+	setInterval(ikeaAlerter.checkIKEA, 1000 * 60 * 5)
 };
 
 let lastTrigger = null
