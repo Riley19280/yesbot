@@ -17,7 +17,16 @@ exports.run = (c) => {
 	reactionHandler.init(client)
 
 	setInterval(dailyChallengeHandler, 1000 * 15)
-	setInterval(ikeaAlerter.checkIKEA, 1000 * 60 * 5)
+
+
+
+	if(process.env.ENABLE_IKEA_NOTIFIER == true) {
+		console.log(`IKEA Notifier: Enabled`)
+		setInterval(ikeaAlerter.checkIKEA, 1000 * 60 * 5)
+	} else {
+		console.log(`IKEA Notifier: Disabled`)
+	}
+
 };
 
 let lastTrigger = null
